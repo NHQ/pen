@@ -1,5 +1,5 @@
 var trig = require('../trig')
-var tangential = require('../softTangent')
+var tangent = require('../softTangent')
 
 module.exports = function(ctx, denit){
 
@@ -12,8 +12,8 @@ module.exports = function(ctx, denit){
 
   return {
     down: touchdown,
-    move: deltavector,
-    up: liftoff 
+    up: deltavector,
+    move: liftoff 
   }
   
   function spill(){
@@ -38,7 +38,7 @@ module.exports = function(ctx, denit){
       hold = false
       window.cancelAnimationFrame(f)
 //      ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height)
-      ctx.beginPath()
+//      ctx.beginPath()
       var td = evt.allOffsetPoints.reduce(function(acc, e, i, l){
         if(l[i - 1]){
           acc[i] = acc[i - 1] + trig.distance(e, l[i-1]) 
@@ -46,22 +46,79 @@ module.exports = function(ctx, denit){
         }
         else return acc
        }, [0])
-      var ttd = td[td.length - 1] 
-      ctx.moveTo(evt.allOffsetPoints[0][0], evt.allOffsetPoints[0][1])
-      for(var x = 1; x < evt.allOffsetPoints.length; x++){
+      var all = evt.allOffsetPoints
+      var ttd = td[td.length - 1]
+      var a, b, c, d, ar = r, br, cr, at, bt, ct;
+      var last;
+//        ctx.beginPath()
+//      ctx.moveTo(evt.allOffsetPoints[0][0], evt.allOffsetPoints[0][1])
+      for(var x = 0; x < all.length - 1; x++){
+        a = a || all[x -1]
+        b = b || all[x]
+        c = c || all[x + 1]
+        d = d || all[x + 2]
+        ar = ar || r
+        br = radius(r, td[x], ttd, ctx.lineWidth)
+        cr = radius(r, td[x + 1], ttd, ctx.lineWidth)
+//        at = tangent(ar, a, b).tangents
+        bt = tangent(br, b, c).tangents
+        ct = tangent(cr, c, d).tangents
+//        ctx.lineWidth = br
+//        line(ctx,a,b)
+//        console.log(at, bt, ct)
+//         line(ctx,at[0], ct[0])
+//         line(ctx,at[1],ct[1])
+//         line(ctx,at[0], bt[0])
+//         line(ctx,at[1],bt[1])
+//        spill()
         ctx.beginPath()
-        ctx.arc(evt.allOffsetPoints[x][0], evt.allOffsetPoints[x][1], (((r / 1.62) - ctx.lineWidth / 2) * (1 -(td[x]/ttd))) + (ctx.lineWidth/2) , Math.PI * 2, false )
-//        ctx.arc(evt.offsetX, evt.offsetY, r * ((trig.distance(evt.allOffsetPoints.slice(-1)[0], pt) / td), Math.PI * 2, false)
+        ctx.moveTo(bt[0][0], bt[0][1])
+        line(ctx,bt[0], ct[0])
+        line(ctx,ct[0],ct[1])
+        line(ctx,ct[1], bt[1])
+//        line(ctx,bt[1], bt[1])
+        ctx.closePath()
+        ctx.stroke()
         ctx.fill()
+        circle(ctx, b, br)
+//        line(ctx,bt[0], ct[0])
+//        line(ctx,bt[1], ct[1])
+        a = b
+        b = c
+        c = all[x + 2]
+        d = all[x + 3]
+        last = bt[0]
+//        ar = radius(r, td[x-1], ttd, ctx.lineWidth)
+//        ctx.arc(evt.allOffsetPoints[x][0], evt.allOffsetPoints[x][1], (((r / 1.62) - ctx.lineWidth / 2) * (1 -(td[x]/ttd))) + (ctx.lineWidth/2) , Math.PI * 2, false )
+//        ctx.arc(evt.offsetX, evt.offsetY, r * ((trig.distance(evt.allOffsetPoints.slice(-1)[0], pt) / td), Math.PI * 2, false)
+//        ctx.fill()
       }
-      ctx.stroke()
-     // r = ctx.lineWidth
+//      ctx.stroke()
+    // r = ctx.lineWidth
+    r = ctx.lineWidth
     }
   }
 
   function liftoff(evt){
     window.cancelAnimationFrame(f)
     hold = false
-    r = ctx.lineWidth
   }
+}
+function radius(r, td, ttd, w){
+  return ((r / 1.67 ) * (1-(td/ttd))) 
+}
+function circle(ctx, pt, r){
+   ctx.moveTo(pt[0], pt[1])
+   ctx.beginPath()
+   ctx.arc(pt[0], pt[1], r, Math.PI * 2, false)
+   ctx.stroke()
+   ctx.fill()
+}
+function line(ctx, from, to){
+//  ctx.beginPath()
+//  ctx.moveTo(from[0], from[1])
+  ctx.lineTo(to[0], to[1])
+//  ctx.arcTo(from[0], from[1], to[0], to[1], trig.distance(from, to) )
+  ctx.lineJoin = 'round'
+  return
 }
