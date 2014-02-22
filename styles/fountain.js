@@ -20,7 +20,7 @@ module.exports = function(ctx, denit){
     if(hold) f = window.requestAnimationFrame(spill)
     ctx.beginPath()
     ctx.clearRect(0,0,w,h)
-    ctx.arc(pt[0], pt[1], r++, 0, 2 * Math.PI, false);
+    ctx.arc(pt[0], pt[1], r++ / 1.67, 0, 2 * Math.PI, false);
     ctx.fill()
   }
 
@@ -33,7 +33,7 @@ module.exports = function(ctx, denit){
   }
 
   function deltavector(evt){
-    if(trig.distance(pt, [evt.offsetX, evt.offsetY]) < r) return
+    if(false && trig.distance(pt, [evt.offsetX, evt.offsetY]) < r) return
     else{
       hold = false
       window.cancelAnimationFrame(f)
@@ -52,7 +52,7 @@ module.exports = function(ctx, denit){
       var last;
 //        ctx.beginPath()
 //      ctx.moveTo(evt.allOffsetPoints[0][0], evt.allOffsetPoints[0][1])
-      for(var x = 0; x < all.length - 1; x++){
+      for(var x = 1; x < all.length - 2; x++){
         a = a || all[x -1]
         b = b || all[x]
         c = c || all[x + 1]
@@ -100,6 +100,9 @@ module.exports = function(ctx, denit){
   }
 
   function liftoff(evt){
+    ctx.beginPath()
+    ctx.arc(evt.offsetX, evt.offsetY, 1, Math.PI*2, false)
+    ctx.fill()
     window.cancelAnimationFrame(f)
     hold = false
   }
