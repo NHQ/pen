@@ -1,3 +1,6 @@
+body{
+  background:#eee;
+}
 #stage{
   position:absolute;
   width: 100%;

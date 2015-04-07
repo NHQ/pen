@@ -9,7 +9,7 @@ module.exports = function(ctx, denit){
   var w = ctx.canvas.width
   var h = ctx.canvas.height
   var f;
-
+  var lw = ctx.lineWidth
   return {
     down: touchdown,
     up: deltavector,
@@ -20,15 +20,15 @@ module.exports = function(ctx, denit){
     if(hold) f = window.requestAnimationFrame(spill)
     ctx.beginPath()
     ctx.clearRect(0,0,w,h)
-    ctx.arc(pt[0], pt[1], r++, 0, 2 * Math.PI, false);
+    ctx.arc(pt[0], pt[1], r, 0, 2 * Math.PI, false);
     ctx.fill()
   }
 
   function touchdown(evt){
-    r = ctx.lineWidth
+    r = lw = ctx.lineWidth
     pt[0] = evt.offsetX
     pt[1] = evt.offsetY
-    hold = true
+    hold = false//true
     window.requestAnimationFrame(spill)
   }
 
@@ -52,11 +52,12 @@ module.exports = function(ctx, denit){
       var last;
       ctx.beginPath()
       ctx.moveTo(evt.allOffsetPoints[0][0], evt.allOffsetPoints[0][1])
-      ctx.arc(pt[0], pt[1], r, Math.PI * 2, false)
-      ctx.stroke()
+      ctx.lineWidth = 1
+ //     ctx.arc(pt[0], pt[1], r+2, Math.PI * 2, false)
       ctx.fill()
-      for(var x = 1; x < all.length - 2; x++){
-        a = a || all[x -1]
+      ctx.stroke()
+      for(var x = 0; x < all.length - 2; x++){
+        a = a || all[0]
         b = b || all[x]
         c = c || all[x + 1]
         d = d || all[x + 2]
@@ -66,30 +67,19 @@ module.exports = function(ctx, denit){
 //        at = tangent(ar, a, b).tangents
         bt = tangent(br, b, c).tangents
         ct = tangent(cr, c, d).tangents
-//        ctx.lineWidth = br
-//        line(ctx,a,b)
-//        console.log(at, bt, ct)
-//         line(ctx,at[0], ct[0])
-//         line(ctx,at[1],ct[1])
-//         line(ctx,at[0], bt[0])
-//         line(ctx,at[1],bt[1])
-//        spill()
         ctx.beginPath()
         ctx.moveTo(bt[0][0], bt[0][1])
         line(ctx,bt[0], ct[0])
         line(ctx,ct[0],ct[1])
         line(ctx,ct[1], bt[1])
-//        line(ctx,bt[1], bt[1])
         ctx.closePath()
         ctx.stroke()
-        ctx.fill()
-//        circle(ctx, b, br)
-//        line(ctx,bt[0], ct[0])
-//        line(ctx,bt[1], ct[1])
+//        ctx.fill()
+        circle(ctx, b, br)
         a = b
         b = c
-        c = all[x + 2]
-        d = all[x + 3]
+        c = all[x + 2] || c
+        d = all[x + 3] || d
         last = bt[0]
 //        ar = radius(r, td[x-1], ttd, ctx.lineWidth)
 //        ctx.arc(evt.allOffsetPoints[x][0], evt.allOffsetPoints[x][1], (((r / 1.62) - ctx.lineWidth / 2) * (1 -(td[x]/ttd))) + (ctx.lineWidth/2) , Math.PI * 2, false )
@@ -98,7 +88,9 @@ module.exports = function(ctx, denit){
       }
 //      ctx.stroke()
     // r = ctx.lineWidth
-    r = ctx.lineWidth
+    ctx.lineWidth = lw
+    r = lw
+    console.log(r, lw, ctx.lineWidth)
     }
   }
 
@@ -111,14 +103,14 @@ module.exports = function(ctx, denit){
   }
 }
 function radius(r, td, ttd, w){
-  return ((r ) * (1-(td/ttd))) 
+  return ((r) * (1-(td/ttd))) 
 }
 function circle(ctx, pt, r){
    ctx.moveTo(pt[0], pt[1])
    ctx.beginPath()
    ctx.arc(pt[0], pt[1], r, Math.PI * 2, false)
    ctx.stroke()
-   ctx.fill()
+//   ctx.fill()
 }
 function line(ctx, from, to){
 //  ctx.beginPath()

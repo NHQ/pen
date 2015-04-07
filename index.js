@@ -22,10 +22,10 @@ module.exports = function(parent){
   var ctx = window.ctx = canvas.getContext('2d')
   var pen = fountain(ctx)
   ctx.translate(0.5, 0.5)
-  ctx.lineWidth = 2
+  ctx.lineWidth = 30
 //  ctx.globalCompositeOperation = 'lighter';
-  ctx.fillStyle = 'rgba(22,222,28,1)'
-  ctx.strokeStyle = 'rgba(22,222,28,1)' 
+  ctx.fillStyle = 'black'//'rgba(222,22,228,1)'
+  ctx.strokeStyle = 'black'//'rgba(222,22,228,1)' 
 
   ctx.lineJoin = 'round'
   canvas.addEventListener('touchdown', function(e){
